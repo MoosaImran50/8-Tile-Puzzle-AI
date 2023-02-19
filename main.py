@@ -10,7 +10,10 @@ def print_matrix(print_list):
 
 
 def goal_state(data):
-    if data[0][0] == ' ' and data[0][1] == 1 and data[0][2] == 2 and data[1][0] == 3 and data[1][1] == 4 and data[1][2] == 5 and data[2][0] == 6 and data[2][1] == 7 and data[2][2] == 8:
+    goal = [[1, 4, 2],
+            [3, 7, 5],
+            [6, ' ', 8]]
+    if data == goal:
         return 1
     else:
         return 0
@@ -18,11 +21,12 @@ def goal_state(data):
 
 def possible_moves(queue_copy, visited_copy, path_copy, duplicate):
     duplicate[:] = copy.deepcopy(queue_copy.pop())
+    print('-----------', duplicate)
     matrix1 = copy.deepcopy(duplicate)
     convert1 = tuple(map(tuple, duplicate))  # converting matrix list to tuple for storing in hash form
 
     if matrix1[0][0] == ' ':
-        matrix1[0][0], matrix1[0][1] = matrix1[0][1], matrix1[0][0]  # right swap
+        matrix1[0][0], matrix1[1][0] = matrix1[1][0], matrix1[0][0]  # down swap
         if matrix1 not in visited_copy:
             visited_copy.append(matrix1)
             if goal_state(matrix1) == 1:
@@ -31,7 +35,7 @@ def possible_moves(queue_copy, visited_copy, path_copy, duplicate):
             convert2 = tuple(map(tuple, matrix1))
             path_copy[copy.deepcopy(convert2)] = copy.deepcopy(convert1)
         matrix1 = copy.deepcopy(duplicate)
-        matrix1[0][0], matrix1[1][0] = matrix1[1][0], matrix1[0][0]  # down swap
+        matrix1[0][0], matrix1[0][1] = matrix1[0][1], matrix1[0][0]  # right swap
         if matrix1 not in visited_copy:
             visited_copy.append(matrix1)
             if goal_state(matrix1) == 1:
@@ -86,15 +90,6 @@ def possible_moves(queue_copy, visited_copy, path_copy, duplicate):
             path_copy[copy.deepcopy(convert2)] = copy.deepcopy(convert1)
 
     elif matrix1[1][0] == ' ':
-        matrix1[1][0], matrix1[1][1] = matrix1[1][1], matrix1[1][0]  # right swap
-        if matrix1 not in visited_copy:
-            visited_copy.append(matrix1)
-            if goal_state(matrix1) == 1:
-                return 1
-            queue_copy.append(matrix1)
-            convert2 = tuple(map(tuple, matrix1))
-            path_copy[copy.deepcopy(convert2)] = copy.deepcopy(convert1)
-        matrix1 = copy.deepcopy(duplicate)
         matrix1[1][0], matrix1[0][0] = matrix1[0][0], matrix1[1][0]  # up swap
         if matrix1 not in visited_copy:
             visited_copy.append(matrix1)
@@ -105,6 +100,15 @@ def possible_moves(queue_copy, visited_copy, path_copy, duplicate):
             path_copy[copy.deepcopy(convert2)] = copy.deepcopy(convert1)
         matrix1 = copy.deepcopy(duplicate)
         matrix1[1][0], matrix1[2][0] = matrix1[2][0], matrix1[1][0]  # down swap
+        if matrix1 not in visited_copy:
+            visited_copy.append(matrix1)
+            if goal_state(matrix1) == 1:
+                return 1
+            queue_copy.append(matrix1)
+            convert2 = tuple(map(tuple, matrix1))
+            path_copy[copy.deepcopy(convert2)] = copy.deepcopy(convert1)
+        matrix1 = copy.deepcopy(duplicate)
+        matrix1[1][0], matrix1[1][1] = matrix1[1][1], matrix1[1][0]  # right swap
         if matrix1 not in visited_copy:
             visited_copy.append(matrix1)
             if goal_state(matrix1) == 1:
@@ -242,8 +246,9 @@ def possible_moves(queue_copy, visited_copy, path_copy, duplicate):
     return 0
 
 
-def bfs(matrix_input):
-    last_popped = [[0, 0, 0], [0, ' ', 0], [0, 0, 0]]
+def bfs_dfs(matrix_input):
+    print("---------- BFS ----------")
+    last_popped = []
     path = {}
     visited = []
     queue = []
@@ -254,6 +259,7 @@ def bfs(matrix_input):
     while queue:
         if possible_moves(queue, visited, path, last_popped) == 1:
             break
+
     conv1 = tuple(map(tuple, copy.deepcopy(visited[-1])))  # final child
     conv2 = tuple(map(tuple, copy.deepcopy(last_popped)))  # final parent
     path[conv1] = conv2
@@ -265,21 +271,25 @@ def bfs(matrix_input):
     child = end
     parent = path[child]
     path_queue.append(copy.deepcopy(child))
-    path_queue.append(copy.deepcopy(parent))
+    moves_counter = 1
 
     while parent != start:
         child = copy.deepcopy(parent)
         conv3 = tuple(map(tuple, copy.deepcopy(parent)))
         parent = copy.deepcopy(path[conv3])
         path_queue.append(copy.deepcopy(child))
-    path_queue.append(copy.deepcopy(parent))
+        moves_counter += 1
+    path_queue.append(copy.deepcopy(start))
     path_queue.reverse()
 
     print_matrix(path_queue)
+    print("No of moves: ", moves_counter)
 
 
 print("---------- START ----------")
 
-matrix = [[7, 2, 4], [5, ' ', 6], [8, 3, 1]]
+matrix = [[' ', 1, 2],
+          [3, 4, 5],
+          [6, 7, 8]]
 
-bfs(matrix)
+bfs_dfs(matrix)
