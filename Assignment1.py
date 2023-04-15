@@ -10,9 +10,9 @@ def print_matrix(print_list):
 
 
 def goal_state(data):
-    goal = [[1, ' ', 2],
-            [3, 4, 5],
-            [6, 7, 8]]
+    goal = [[1, 4, ' '],
+            [3, 7, 2],
+            [6, 8, 5]]
     if data == goal:
         return 1
     else:
@@ -111,7 +111,7 @@ def bfs_dfs(matrix_input, option):
 
     while parent != start:
         child = copy.deepcopy(parent)
-        conv3 = tuple(map(tuple, copy.deepcopy(parent)))
+        conv3 = copy.deepcopy(parent)
         parent = copy.deepcopy(path[conv3])
         path_queue.append(copy.deepcopy(child))
         moves_counter += 1
